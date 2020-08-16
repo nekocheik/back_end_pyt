@@ -1,0 +1,19 @@
+{
+  "name": "pyt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nekocheik/back_end_pyt.git"
+  },
+  "author": "veggiemonk <julien.bisconti@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nekocheik/back_end_pyt/issues"
+  },
+  "homepage": "https://github.com/nekocheik/back_end_pyt#readme"
+}
