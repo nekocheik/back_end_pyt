@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "database_development",
-    "host": "127.0.0.1",
+    "username": "cheik2",
+    "password": "123456",
+    "database": "PYT",
+    "host": "localhost",
+    "port": "8889",
     "dialect": "mysql"
   },
   "test": {
