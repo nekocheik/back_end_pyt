@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
     }}).then((user)=> { 
       res.status(200).json({
         message : 'user find',
-        users : {
+        user : {
           id : user.id,
           name: user.name
         }
