@@ -10,10 +10,13 @@ router.get('/', function(req, res, next) {
   if (id) {
     User.findOne({ where : { 
       id,
-    }}).then((d)=> {
+    }}).then((user)=> { 
       res.status(200).json({
         message : 'user find',
-        users : d
+        users : {
+          id : user.id,
+          name: user.name
+        }
       })
     })
   }
