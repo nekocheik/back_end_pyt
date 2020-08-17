@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Date extends Model {
     /**
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   Date.init({
     date: DataTypes.DATE,
   }, {
@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Date',
   });
 
-  Date.associate = function ( model )  {
-   Date.hasMany(model.Event, { as : "Events" })
-  }
+  Date.associate = function (model) {
+    Date.hasMany(model.Event, { as: 'Events' });
+  };
   return Date;
 };

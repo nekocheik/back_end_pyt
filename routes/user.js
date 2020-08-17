@@ -1,48 +1,51 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+
+const router = express.Router();
 
 const models = require('../models');
-const User = models.User
+
+const { User } = models;
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  let {id} = req.query
+router.get('/', (req, res, next) => {
+  const { id } = req.query;
   if (id) {
-    User.findOne({ where : { 
-      id,
-    }}).then((user)=> { 
+    User.findOne({
+      where: {
+        id,
+      },
+    }).then((user) => {
       res.status(200).json({
-        message : 'user find',
-        user : {
-          id : user.id,
-          name: user.name
-        }
-      })
-    })
+        message: 'user find',
+        user: {
+          id: user.id,
+          name: user.name,
+        },
+      });
+    });
   }
-
 });
 
-router.post('/', function(req, res, next) {
-  let userName = req.query.name
-  if ( userName ) {
-    userName = userName.toLocaleLowerCase()
+router.post('/', (req, res, next) => {
+  let userName = req.query.name;
+  if (userName) {
+    userName = userName.toLocaleLowerCase();
     User.create({
       name: userName,
-    }).then((user)=>{
+    }).then((user) => {
       res.status(200).json({
-        message : "new user " + userName + " is add",
-        user: user,
-      })
-    }).catch( error  => {
+        message: `new user ${userName} is add`,
+        user,
+      });
+    }).catch((error) => {
       res.status(400).json({
-        message : error,
-      })
-    })
+        message: error,
+      });
+    });
   } else {
     res.status(400).json({
-      message : 'the value is incorrect',
-    })
+      message: 'the value is incorrect',
+    });
   }
 });
 
