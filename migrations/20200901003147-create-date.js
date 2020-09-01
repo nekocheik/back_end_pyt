@@ -1,27 +1,23 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('participants', {
+    await queryInterface.createTable('dates', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      user_id: {
+      event_id: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         references: {
-          model: 'User',
+          model: 'Events',
           key: 'id',
         },
       },
-      event_id: {
+      date: {
         allowNull: false,
-        type: Sequelize.STRING,
-        references: {
-          model: 'Event',
-          key: 'id',
-        },
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,
@@ -34,6 +30,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('participants');
+    await queryInterface.dropTable('dates');
   },
 };

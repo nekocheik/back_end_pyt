@@ -14,8 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   vote.init({
-    date_id: DataTypes.STRING,
-    participant_id: DataTypes.STRING
+    participant_id: DataTypes.INTEGER,
+    date_id: DataTypes.INTEGER,
+    type: DataTypes.ENUM
   }, {
     sequelize,
     modelName: 'vote',

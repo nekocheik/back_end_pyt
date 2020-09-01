@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   date.init({
-    date: DataTypes.DATE,
-    event_id: DataTypes.STRING
+    event_id: DataTypes.INTEGER,
+    date: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'date',

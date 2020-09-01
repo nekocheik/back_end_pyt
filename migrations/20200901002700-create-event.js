@@ -1,23 +1,25 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('votes', {
+    await queryInterface.createTable('events', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      date_id: {
+      name: {
+        allowNull: false,
         type: Sequelize.STRING,
-        references: {
-          model: 'Dates',
-          key: 'id',
-        },
       },
-      participant_id: {
+      password: {
+        allowNull: false,
         type: Sequelize.STRING,
+      },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
         references: {
-          model: 'Participants',
+          model: 'Users',
           key: 'id',
         },
       },
@@ -32,6 +34,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('votes');
+    await queryInterface.dropTable('events');
   },
 };
