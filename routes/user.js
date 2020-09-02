@@ -6,7 +6,8 @@ const sequelize = new Sequelize('sqlite::memory:');
 const router = express.Router();
 const models = require('../models');
 
-const { User } = models;
+const { User, event } = models;
+const Event = event;
 const { body, validationResult } = require('express-validator');
 
 /* GET home page. */
@@ -22,11 +23,25 @@ router.get('/', (req, res, next) => {
         message: 'user find',
         user: {
           id: user.id,
-          name: user.name,
+          name: user.username,
         },
       });
-    });
+    }).catch((error) => res.status(400).json({ error }));
   }
+});
+
+/* GET home page. */
+router.get('/event', (req, res, next) => {
+  Event.create({
+    name: 'dfsfdsds',
+    password: 'DataTypes.STRING',
+    user_id: 1,
+  })
+    .then((event) => {
+      res.status(200).json({
+        event,
+      });
+    }).catch((error) => res.status(400).json({ error }));
 });
 
 router.post('/', [
@@ -58,7 +73,7 @@ router.post('/', [
     });
   }).catch((messageError) => {
     const { message, type, path } = messageError.errors[0];
-    res.status(400).json({ message, type, path });
+    res.status(400).json({ errors: [{ message, type, path }] });
   });
 });
 

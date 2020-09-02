@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.participant.hasOne(models.event, {
+        foreignKey: 'event_id',
+      });
     }
   }
   participant.init({
