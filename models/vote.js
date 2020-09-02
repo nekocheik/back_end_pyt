@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class vote extends Model {
     /**
@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   vote.init({
     participant_id: DataTypes.INTEGER,
     date_id: DataTypes.INTEGER,
-    type: DataTypes.ENUM
+    type: DataTypes.ENUM('v'),
   }, {
     sequelize,
     modelName: 'vote',

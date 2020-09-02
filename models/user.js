@@ -16,7 +16,27 @@ module.exports = (sequelize, DataTypes) => {
   User.init({
     username: DataTypes.STRING,
     password: DataTypes.STRING,
-    email: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isUnique: (email) => new Promise((res, reject) => {
+          User.findOne({
+            where: {
+              email,
+            },
+          }).then((val) => {
+            if (val) {
+              reject(new Error('Email address already in use!'));
+            } else {
+              res();
+            }
+          });
+        }),
+        isEmail: true,
+      },
+    },
   }, {
     sequelize,
     modelName: 'User',
