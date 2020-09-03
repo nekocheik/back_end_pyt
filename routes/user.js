@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const express = require('express');
 const { Sequelize } = require('sequelize');
 
@@ -64,6 +66,7 @@ router.post('/', [
   email = email.toLocaleLowerCase();
 
   User.create({
+    uuid: uuid.v4(),
     username,
     email,
     password,

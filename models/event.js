@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       event.hasOne(models.User, {
-        foreignKey: 'id',
+        foreignKey: 'uuid',
       });
     }
   }

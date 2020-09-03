@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model
+  Model,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class date extends Model {
     /**
@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   date.init({
     event_id: DataTypes.INTEGER,
-    date: DataTypes.DATE
+    date: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'date',

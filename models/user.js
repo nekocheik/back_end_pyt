@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User.init({
+    uuid: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: sequelize.UUIDV4,
+    },
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     email: {
@@ -41,5 +46,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
   });
+  User.removeAttribute('id');
   return User;
 };
