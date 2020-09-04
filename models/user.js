@@ -1,6 +1,7 @@
 const {
   Model,
 } = require('sequelize');
+const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -47,5 +48,12 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
   });
   User.removeAttribute('id');
+  User.beforeCreate((user, options) => bcrypt.hash(user.password, 10)
+    .then((hash) => {
+      user.password = hash;
+    })
+    .catch((err) => {
+      throw new Error();
+    }));
   return User;
 };

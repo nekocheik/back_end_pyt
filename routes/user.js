@@ -1,4 +1,7 @@
 const uuid = require('uuid');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 const express = require('express');
 const { Sequelize } = require('sequelize');
@@ -6,11 +9,11 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('sqlite::memory:');
 
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
 const models = require('../models');
 
 const { User, event } = models;
 const Event = event;
-const { body, validationResult } = require('express-validator');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
