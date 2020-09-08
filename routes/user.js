@@ -1,12 +1,6 @@
 const uuid = require('uuid');
-const bcrypt = require('bcrypt');
-
-const saltRounds = 10;
 
 const express = require('express');
-const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize('sqlite::memory:');
 
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
@@ -57,7 +51,7 @@ router.post('/', [
     .isLength({ min: 3, max: 15 }),
   // password
   body('password').exists().isString()
-    .isLength({ min: 3, max: 15 }),
+    .isLength({ min: 3, max: 55 }),
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
