@@ -3,6 +3,8 @@ const {
 } = require('sequelize');
 const bcrypt = require('bcrypt');
 
+const salt = 10;
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -48,12 +50,17 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
   });
   User.removeAttribute('id');
-  User.beforeCreate((user, options) => bcrypt.hash(user.password, 10)
+
+  User.compare = function (value, encrypted) {
+    return bcrypt.compareSync(value, encrypted);
+  };
+
+  User.beforeCreate((user, options) => bcrypt.hash(user.password, salt)
     .then((hash) => {
       user.password = hash;
     })
     .catch((err) => {
-      throw new Error();
+      throw new Error(err);
     }));
   return User;
 };
