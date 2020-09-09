@@ -66,10 +66,11 @@ router.get('/', [[
 
 /* GET home page. */
 protectedRouter.get('/event', (req, res, next) => {
+  const uId = res.locals.decoded.uuid;
   Event.create({
     name: 'dfsfdsds',
     password: 'DataTypes.STRING',
-    user_id: 1,
+    user_id: uId,
   })
     .then((event) => {
       res.status(200).json({

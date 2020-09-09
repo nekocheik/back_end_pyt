@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   event.init({
     name: DataTypes.STRING,
     password: DataTypes.STRING,
-    user_id: DataTypes.INTEGER,
+    user_id: DataTypes.UUID,
   }, {
     sequelize,
     modelName: 'event',
