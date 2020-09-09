@@ -69,7 +69,7 @@ protectedRouter.get('/event', (req, res, next) => {
   const uId = res.locals.decoded.uuid;
   Event.create({
     name: 'dfsfdsds',
-    password: 'DataTypes.STRING',
+    description: 'DataTypes.STRING',
     user_id: uId,
   })
     .then((event) => {
