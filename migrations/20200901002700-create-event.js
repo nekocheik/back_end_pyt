@@ -22,10 +22,10 @@ module.exports = {
       user_id: {
         allowNull: true,
         type: Sequelize.UUID,
-        // references: {
-        //   model: 'Users',
-        //   key: 'uuid',
-        // },
+        references: {
+          model: 'Users',
+          key: 'uuid',
+        },
       },
       createdAt: {
         allowNull: false,
