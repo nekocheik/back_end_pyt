@@ -17,7 +17,7 @@ module.exports = {
       },
       statuts: {
         allowNull: false,
-        type: Sequelize.ENUM('validate', 'waiting', 'cancel'),
+        type: Sequelize.ENUM('waiting', 'validate', 'cancel'),
       },
       user_id: {
         allowNull: true,

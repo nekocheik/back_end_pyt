@@ -33,12 +33,13 @@ const Event = event;
 //   }
 // });
 
-router.get('/', [[
+router.get('/', [
   query('email').exists().isEmail(),
   query('password').exists().isString()
     .isLength({ min: 3, max: 55 }),
-]], async (req, res) => {
+], async (req, res) => {
   const errors = validationResult(req);
+  console.log(req.query);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
@@ -148,20 +149,6 @@ protectedRouter.put('/', [
     });
   }
   return res.status(400).json({ errors: user });
-});
-
-protectedRouter.get('/event', (req, res, next) => {
-  const uId = res.locals.decoded.uuid;
-  Event.create({
-    name: 'dfsfdsds',
-    description: 'DataTypes.STRING',
-    user_id: uId,
-  })
-    .then((event) => {
-      res.status(200).json({
-        ...event.dataValues,
-      });
-    }).catch((error) => res.status(400).json({ error }));
 });
 
 module.exports = router;

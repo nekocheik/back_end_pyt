@@ -8,5 +8,6 @@ module.exports = function () {
     }
     return newObject;
   };
+  module.getSecretKey = () => 'fsafkddoffgdgned@gmaifddsal';
   return module;
 };
