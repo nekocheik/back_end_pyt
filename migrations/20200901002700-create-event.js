@@ -15,13 +15,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      user_id: {
+      statuts: {
         allowNull: false,
+        type: Sequelize.ENUM('validate', 'waiting', 'cancel'),
+      },
+      user_id: {
+        allowNull: true,
         type: Sequelize.UUID,
-        references: {
-          model: 'Users',
-          key: 'uuid',
-        },
+        // references: {
+        //   model: 'Users',
+        //   key: 'uuid',
+        // },
       },
       createdAt: {
         allowNull: false,

@@ -36,19 +36,19 @@ router.get('/', [[
   query('email').exists().isEmail(),
   query('password').exists().isString()
     .isLength({ min: 3, max: 55 }),
-]], (req, res) => {
+]], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { email, password } = req.query;
-
-  User.findOne({
+  const user = await User.findOne({
     where: {
       email,
     },
-  }).then((user) => {
+  });
+  if (user) {
     if (!User.compare(password, user.password)) {
       return res.status(400).json({ errors: 'error of value send' });
     }
@@ -58,25 +58,29 @@ router.get('/', [[
     res.status(200).json({
       token,
     });
-  }).catch((messageError) => {
-    const { message, type, path } = messageError.errors[0];
-    res.status(400).json({ errors: [{ message, type, path }] });
-  });
+  } else { return res.status(400).json({ message: 'user not found' }); }
+  return res.status(400).json({ message: user });
 });
 
 /* GET home page. */
-protectedRouter.get('/event', (req, res, next) => {
+protectedRouter.delete('/', async (req, res) => {
   const uId = res.locals.decoded.uuid;
-  Event.create({
-    name: 'dfsfdsds',
-    description: 'DataTypes.STRING',
-    user_id: uId,
-  })
-    .then((event) => {
-      res.status(200).json({
-        event,
-      });
-    }).catch((error) => res.status(400).json({ error }));
+
+  const user = await User.destroy({
+    where: {
+      uuid: uId,
+    },
+  }).catch((errors) => {
+    res.status(400).json({ errors });
+  });
+
+  console.log(user);
+  if (user) {
+    return res.status(200).json({
+      message: 'create user successfully',
+    });
+  }
+  return res.status(400).json({ errors: 'user not found' });
 });
 
 router.post('/', [
@@ -108,6 +112,20 @@ router.post('/', [
     const { message, type, path } = messageError.errors[0];
     res.status(400).json({ errors: [{ message, type, path }] });
   });
+});
+
+protectedRouter.get('/event', (req, res, next) => {
+  const uId = res.locals.decoded.uuid;
+  Event.create({
+    name: 'dfsfdsds',
+    description: 'DataTypes.STRING',
+    user_id: uId,
+  })
+    .then((event) => {
+      res.status(200).json({
+        ...event.dataValues,
+      });
+    }).catch((error) => res.status(400).json({ error }));
 });
 
 module.exports = router;
