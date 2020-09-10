@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const express = require('express');
+const gFunction = require('../helpers/globalFunction.js')();
 
 const router = express.Router();
 const { body, query, validationResult } = require('express-validator');
@@ -66,6 +67,12 @@ router.get('/', [[
 protectedRouter.delete('/', async (req, res) => {
   const uId = res.locals.decoded.uuid;
 
+  await Event.update({ user_id: null }, {
+    where: {
+      user_id: uId,
+    },
+  });
+
   const user = await User.destroy({
     where: {
       uuid: uId,
@@ -74,10 +81,9 @@ protectedRouter.delete('/', async (req, res) => {
     res.status(400).json({ errors });
   });
 
-  console.log(user);
   if (user) {
     return res.status(200).json({
-      message: 'create user successfully',
+      message: 'drop user successfully',
     });
   }
   return res.status(400).json({ errors: 'user not found' });
@@ -96,7 +102,6 @@ router.post('/', [
   }
 
   let { username, email, password } = req.body;
-  username = username.toLocaleLowerCase();
   email = email.toLocaleLowerCase();
 
   User.create({
@@ -112,6 +117,37 @@ router.post('/', [
     const { message, type, path } = messageError.errors[0];
     res.status(400).json({ errors: [{ message, type, path }] });
   });
+});
+
+protectedRouter.put('/', [
+  body('email').isEmail(),
+  body('username').isString()
+    .isLength({ min: 3, max: 15 }),
+  body('password').isString()
+    .isLength({ min: 3, max: 55 }),
+], async (req, res) => {
+  const errors = validationResult(req);
+  const uId = res.locals.decoded.uuid;
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  let { username, email, password } = req.body;
+  username = username.toLocaleLowerCase();
+  email = email.toLocaleLowerCase();
+
+  const user = await User.update(gFunction.cleanVariables({ email, password, username }), {
+    where: {
+      uuid: uId,
+    },
+  }).catch((errors) => res.status(400).json({ errors }));
+
+  if (user[0]) {
+    return res.status(200).json({
+      message: 'update user is done white success',
+    });
+  }
+  return res.status(400).json({ errors: user });
 });
 
 protectedRouter.get('/event', (req, res, next) => {
