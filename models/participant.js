@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   participant.init({
     event_id: DataTypes.INTEGER,
     user_id: DataTypes.INTEGER,
+    type: DataTypes.ENUM('guest', 'organizer'),
   }, {
     sequelize,
     modelName: 'participant',

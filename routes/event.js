@@ -6,16 +6,17 @@ const { body, query } = getValidator();
 const protectedRouter = getProtectedRouter();
 const router = getRouter();
 
-const { event } = require('../models');
+const { event, participant } = require('../models');
 const _ = require('lodash');
 
+const Participant = participant;
 const Event = event;
 protectedRouter.get('/events', [
   body('n').exists()
     .custom((value) => _.isNumber(Number(value)) && Number(value) < 100),
   body('o')
     .custom((value) => _.isNumber(!value || (Number(value)) && Number(value) < 100)),
-], (req, res, next) => {
+], (req, res) => {
   const uId = res.locals.decoded.uuid;
   const limit = Number(req.query.n) || 50;
   const offset = Number(req.query.o) || 0;
@@ -37,17 +38,21 @@ protectedRouter.get('/', [
 ], (req, res, next) => {
   const uId = res.locals.decoded.uuid;
   const id = Number(req.query.id);
-  Event.findAll({
+  Event.findOne({
     where: {
       user_id: uId,
       id,
     },
   })
-    .then((data) => {
-      if (data.length) {
-        return res.status(200).json(data);
-      }
-      res.status(400).json({ message: 'event not find' });
+    .then((event) => {
+      Participant.findAll({
+        where: {
+          event_id: event.id,
+        },
+      }).then((participant) => res.status(200).json({
+        ...event.dataValues,
+        participant,
+      }));
     }).catch((error) => res.status(400).json({ error }));
 });
 
@@ -65,8 +70,10 @@ protectedRouter.post('/', [
     user_id: uId,
   })
     .then((event) => {
-      res.status(200).json({
-        ...event.dataValues,
+      Participant.create({ event_id: event.id, user_id: uId, type: 'organizer' }).then((participants) => {
+        res.status(200).json({
+          ...event.dataValues,
+        });
       });
     }).catch((error) => res.status(400).json({ error }));
 });
@@ -122,7 +129,7 @@ protectedRouter.delete('/', [
         });
       } else {
         res.status(400).json({
-          message: 'the event is dont found',
+          message: 'the event is not found',
         });
       }
     }).catch((error) => res.status(400).json({ error }));

@@ -23,6 +23,10 @@ module.exports = {
           key: 'uuid',
         },
       },
+      type: {
+        allowNull: false,
+        type: Sequelize.ENUM('guest', 'organizer'),
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
