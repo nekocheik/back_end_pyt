@@ -10,7 +10,7 @@ module.exports = function () {
   module.getProtectedRouter = () => protectedRouter;
   module.getRouter = () => router;
   module.getValidator = () => ({ body, query, validationResult });
-  module.gFunction = () => gFunction();
+  module.gFunction = () => gFunction;
 
   return module;
 };
