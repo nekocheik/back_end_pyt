@@ -11,6 +11,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      type: {
+        allowNull: false,
+        type: Sequelize.ENUM('private', 'public'),
+      },
       password: {
         allowNull: false,
         type: Sequelize.STRING,

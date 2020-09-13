@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     description: DataTypes.STRING,
     user_id: DataTypes.UUID,
+    type: DataTypes.ENUM('private', 'public'),
   }, {
     sequelize,
     modelName: 'event',
