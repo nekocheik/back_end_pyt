@@ -70,7 +70,9 @@ protectedRouter.post('/', [
     user_id: uId,
   })
     .then((event) => {
-      Participant.create({ event_id: event.id, user_id: uId, type: 'organizer' }).then((participants) => {
+      Participant.create(gFunction().cleanVariables({
+        event_id: event.id, user_id: uId, type: 'organizer',
+      })).then((participants) => {
         res.status(200).json({
           ...event.dataValues,
         });

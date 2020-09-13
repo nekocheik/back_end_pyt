@@ -1,3 +1,5 @@
+const async = require('async');
+
 const uuid = require('uuid');
 const express = require('express');
 const gFunction = require('../helpers/globalFunction.js')();
@@ -13,33 +15,12 @@ const protectedRouter = withJWTAuthMiddleware(router, secretKey);
 const { User, event } = models;
 const Event = event;
 
-/* GET home page. */
-// router.get('/', (req, res) => {
-//   const { id } = req.query;
-//   if (id) {
-//     User.findOne({
-//       where: {
-//         id,
-//       },
-//     }).then((user) => {
-//       res.status(200).json({
-//         message: 'user find',
-//         user: {
-//           id: user.id,
-//           name: user.username,
-//         },
-//       });
-//     }).catch((error) => res.status(400).json({ error }));
-//   }
-// });
-
 router.get('/', [
   query('email').exists().isEmail(),
   query('password').exists().isString()
     .isLength({ min: 3, max: 55 }),
 ], async (req, res) => {
   const errors = validationResult(req);
-  console.log(req.query);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
@@ -96,21 +77,28 @@ router.post('/', [
     .isLength({ min: 3, max: 15 }),
   body('password').exists().isString()
     .isLength({ min: 3, max: 55 }),
+  body('phone_number').isString()
+    .isLength({ min: 10, max: 10 }),
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  let { username, email, password } = req.body;
+  let {
+    username, email, password, phone_number,
+  } = req.body;
   email = email.toLocaleLowerCase();
 
-  User.create({
-    uuid: uuid.v4(),
-    username,
-    email,
-    password,
-  }).then(() => {
+  User.create(
+    gFunction.cleanVariables({
+      phone_number,
+      uuid: uuid.v4(),
+      username,
+      email,
+      password,
+    }),
+  ).then(() => {
     res.status(200).json({
       message: 'create user successfully',
     });
@@ -126,6 +114,8 @@ protectedRouter.put('/', [
     .isLength({ min: 3, max: 15 }),
   body('password').isString()
     .isLength({ min: 3, max: 55 }),
+  // body('phone_number').isString()
+  //   .isLength({ min: 10, max: 10 }),
 ], async (req, res) => {
   const errors = validationResult(req);
   const uId = res.locals.decoded.uuid;
@@ -133,22 +123,46 @@ protectedRouter.put('/', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  let { username, email, password } = req.body;
+  let {
+    username, email, password, phone_number,
+  } = req.body;
   username = username.toLocaleLowerCase();
   email = email.toLocaleLowerCase();
 
-  const user = await User.update(gFunction.cleanVariables({ email, password, username }), {
-    where: {
-      uuid: uId,
-    },
-  }).catch((errors) => res.status(400).json({ errors }));
+  async.waterfall([
+    async (arg, done) => {
+      const user = await User.findOne({
+        where: gFunction.cleanVariables({
+          email,
+          phone_number,
+          uuid: uId,
+        }),
+      });
 
-  if (user[0]) {
-    return res.status(200).json({
-      message: 'update user is done white success',
-    });
-  }
-  return res.status(400).json({ errors: user });
+      if (user) {
+        phone_number = undefined;
+        email = undefined;
+      }
+      done;
+    },
+    async () => {
+      const user = await User.update(gFunction.cleanVariables({
+        email, password, username, phone_number,
+      }), {
+        where: {
+          uuid: uId,
+        },
+        individualHooks: true,
+      }).catch((errors) => res.status(400).json({ errors }));
+
+      if (user[0]) {
+        return res.status(200).json({
+          message: 'update user is done white success',
+        });
+      }
+      return res.status(400).json({ errors: user });
+    },
+  ]);
 });
 
 module.exports = router;
