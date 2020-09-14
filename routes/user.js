@@ -38,8 +38,11 @@ router.get('/', [
     const token = jwt.sign({ uuid: user.uuid, email: user.email }, secretKey, {
       expiresIn: '2160h',
     });
+
+    delete user.dataValues.password;
     res.status(200).json({
       token,
+      ...user.dataValues,
     });
   } else { return res.status(400).json({ message: 'user not found' }); }
   return res.status(400).json({ message: user });
@@ -143,7 +146,6 @@ protectedRouter.put('/', [
         phone_number = undefined;
         email = undefined;
       }
-      done;
     },
     async () => {
       const user = await User.update(gFunction.cleanVariables({
