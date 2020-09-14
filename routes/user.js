@@ -15,7 +15,7 @@ const protectedRouter = withJWTAuthMiddleware(router, secretKey);
 const { User, event } = models;
 const Event = event;
 
-router.get('/', [
+router.get('/token', [
   query('email').exists().isEmail(),
   query('password').exists().isString()
     .isLength({ min: 3, max: 55 }),
