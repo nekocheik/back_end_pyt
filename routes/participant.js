@@ -1,5 +1,5 @@
 const {
-  getProtectedRouter, getRouter, getValidator, gFunction, getSmsToken,
+  getProtectedRouter, getRouter, getValidator, gFunction, getSmsToken, getUser,
 } = require('../helpers/api')();
 const async = require('async');
 
@@ -7,7 +7,7 @@ const accountSid = 'AC4635aef870d9a5b4af79da6ab3ae5b71';
 const authToken = '66db66b723f5a1c5609f69679f2559d8';
 const client = require('twilio')(accountSid, authToken);
 /// ////
-const { body, query } = getValidator();
+const { body, query, validationResult } = getValidator();
 const protectedRouter = getProtectedRouter();
 const router = getRouter();
 
@@ -81,12 +81,18 @@ protectedRouter.get('/', isGuest, async (req, res, next) => {
   }
 });
 
-protectedRouter.post('/add', isOrganizer, async (req, res, next) => {
+protectedRouter.post('/', isOrganizer, [
+  body('participant').exists().isEmail(),
+], async (req, res, next) => {
   const event_id = Number(req.query.event || null);
   const { participant } = req.body;
 
-  async.waterfall([
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
+  async.waterfall([
     async function (callback) {
       const gest = await User.findOne({
         where: {
@@ -146,6 +152,37 @@ protectedRouter.post('/add', isOrganizer, async (req, res, next) => {
   // if (participants) {
   //   res.status(400).json(participants);
   // }
+});
+
+protectedRouter.delete('/', isOrganizer, async (req, res, next) => {
+  const event_id = Number(req.query.event || null);
+  const { participant } = req.body;
+
+  async.waterfall([
+    async function () {
+      const gest = await User.findOne({
+        where: {
+          email: participant,
+        },
+      });
+      return gest;
+    },
+
+    async function (gest) {
+      if (gest) {
+        const participantAlreadyRegistred = await Participant.destroy({
+          where: {
+            user_id: gest.uuid,
+            event_id,
+          },
+        });
+
+        return res.status(400).json({ message: 'user delete white succés', participantAlreadyRegistred });
+      }
+      return res.status(400).json({ message: 'user dont exist' });
+    },
+
+  ]);
 });
 
 module.exports = router;

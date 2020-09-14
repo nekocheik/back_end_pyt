@@ -7,6 +7,11 @@ module.exports = function () {
   const qs = require('qs');
   const token = null;
   const env = require('dotenv').config().parsed;
+  const models = require('../models');
+
+  const { User, event, participant } = models;
+  const Event = event;
+  const Participant = participant;
 
   const router = express.Router();
   const protectedRouter = withJWTAuthMiddleware(router, 'fsafkddoffgdgned@gmaifddsal');
@@ -16,6 +21,8 @@ module.exports = function () {
   module.getRouter = () => router;
   module.getValidator = () => ({ body, query, validationResult });
   module.gFunction = () => gFunction;
+  module.participant = () => participant;
+  module.event = () => event;
 
   return module;
 };
