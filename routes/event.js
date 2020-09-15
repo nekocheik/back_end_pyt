@@ -50,10 +50,17 @@ protectedRouter.get('/', [
         where: {
           event_id: event.id,
         },
-      }).then((participant) => res.status(200).json({
-        ...event.dataValues,
-        participant,
-      }));
+      }).then((participant) => {
+        date.findAll({
+          event_id: event.id,
+        }).then((dates) => {
+          res.status(200).json({
+            ...event.dataValues,
+            participant,
+            dates,
+          });
+        });
+      });
     }).catch((error) => res.status(400).json({ error }));
 });
 
