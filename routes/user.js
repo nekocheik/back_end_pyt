@@ -1,8 +1,9 @@
 const async = require('async');
 
-const uuid = require('uuid');
+const uuidFormat = require('uuid');
 const express = require('express');
 const gFunction = require('../helpers/globalFunction.js')();
+const _ = require('lodash');
 
 const router = express.Router();
 const { body, query, validationResult } = require('express-validator');
@@ -44,6 +45,30 @@ router.get('/token', [
       token,
       ...user.dataValues,
     });
+  } else { return res.status(400).json({ message: 'user not found' }); }
+  return res.status(400).json({ message: user });
+});
+
+router.get('/information', [
+  query('email').isEmail(),
+  query('uid').isString()
+    .isLength({ min: 3, max: 60 }),
+], async (req, res) => {
+  const errors = validationResult(req);
+  const { email, uid } = req.query;
+  const uuid = uid;
+
+  if (!email && !uuid) {
+    return res.status(400).json({ errors: 'the mail or the uuid is required' });
+  }
+
+  const user = await User.findOne({
+    where: gFunction.cleanVariables({ email, uuid }),
+  });
+  if (user) {
+    res.status(200).json(
+      _.omit(user.dataValues, ['password', 'phone_number', 'createdAt', 'updatedAt', 'email']),
+    );
   } else { return res.status(400).json({ message: 'user not found' }); }
   return res.status(400).json({ message: user });
 });
@@ -96,7 +121,7 @@ router.post('/', [
   User.create(
     gFunction.cleanVariables({
       phone_number,
-      uuid: uuid.v4(),
+      uuid: uuidFormat.v4(),
       username,
       email,
       password,
