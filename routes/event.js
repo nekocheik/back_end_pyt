@@ -6,11 +6,12 @@ const { body, query } = getValidator();
 const protectedRouter = getProtectedRouter();
 const router = getRouter();
 
-const { event, participant } = require('../models');
+const { event, participant, date } = require('../models');
 const _ = require('lodash');
 
 const Participant = participant;
 const Event = event;
+
 protectedRouter.get('/events', [
   body('n').exists()
     .custom((value) => _.isNumber(Number(value)) && Number(value) < 100),
@@ -63,7 +64,7 @@ protectedRouter.post('/', [
     .isLength({ min: 0, max: 255 }),
 ], (req, res, next) => {
   const uId = res.locals.decoded.uuid;
-  const { description, name } = req.body;
+  const { description, name, dates } = req.body;
   Event.create({
     name,
     description,
@@ -75,6 +76,12 @@ protectedRouter.post('/', [
       })).then((participants) => {
         res.status(200).json({
           ...event.dataValues,
+        });
+        dates.forEach((currentDate) => {
+          date.create({
+            event_id: event.dataValues.id,
+            date: new Date(currentDate),
+          });
         });
       });
     }).catch((error) => res.status(400).json({ error }));

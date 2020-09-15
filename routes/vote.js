@@ -1,69 +1,15 @@
 const {
-  getProtectedRouter, getRouter, getValidator, gFunction, getSmsToken, getUser,
+  getProtectedRouter, getRouter, Event, User,
+  Participant, getValidator, gFunction,
+  getUser, isGuest, isOrganizer,
 } = require('../helpers/api')();
 const async = require('async');
 
-const client = require('twilio')(accountSid, authToken);
-/// ////
 const { body, query, validationResult } = getValidator();
 const protectedRouter = getProtectedRouter();
 const router = getRouter();
 
 const _ = require('lodash');
-const { event, participant, User } = require('../models');
-
-const Event = event;
-const Participant = participant;
-
-const isGuest = async function (req, res, next) {
-  const uId = res.locals.decoded.uuid || null;
-  const id_event = Number(req.query.event || req.body.event || null);
-
-  const publicEvent = await Event.findOne({
-    where: {
-      id: id_event,
-      type: 'public',
-    },
-  });
-
-  if (publicEvent) {
-    return next();
-  }
-
-  const participant = await Participant.findOne({
-    where: {
-      id: id_event,
-      user_id: uId,
-    },
-  });
-
-  if (participant) {
-    res.locals.event = event;
-    next();
-  } else {
-    res.status(400).json({ message: 'is not organizer' });
-  }
-};
-
-const isOrganizer = async function (req, res, next) {
-  const uId = res.locals.decoded.uuid || null;
-  const id_event = Number(req.query.event || req.body.event || null);
-
-  const participant = await Participant.findOne({
-    where: {
-      id: id_event,
-      user_id: uId,
-      type: 'organizer',
-    },
-  });
-
-  if (participant) {
-    res.locals.event = event;
-    next();
-  } else {
-    res.status(400).json({ message: 'is not organizer' });
-  }
-};
 
 protectedRouter.get('/', isGuest, async (req, res, next) => {
   const event_id = Number(req.query.event || null);
